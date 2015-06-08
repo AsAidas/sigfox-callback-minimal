@@ -10,6 +10,7 @@ import time
 def main():
     c = configparser.ConfigParser()
     c.read("./config.ini")
+    ack = c.get("client_config", "ack")
     addr = c.get("client_config", "address")
     port = c.getint("client_config", "port")
     data = c.get("client_config", "data")
@@ -18,7 +19,7 @@ def main():
     station = c.get("client_config", "station")
     tm = int(time.time())
 
-    frame = "device={}&time={}&snr={}&station={}&data={}".format(device, tm, snr, station, data)
+    frame = "device={}&time={}&snr={}&station={}&data={}&ack={}".format(device, tm, snr, station, data, ack)
 
     conn = http.client.HTTPConnection(addr, port)
     conn.request("POST", "/sigfox", bytes(frame, 'UTF-8'))
