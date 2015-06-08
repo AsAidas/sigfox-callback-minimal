@@ -23,7 +23,7 @@ In the Callback part, create a new callback :
 
 * Type : DATA, UPLINK
 * Channel : URL
-* Url Pattern : http://*address*:*port*/*path*?device={device}&time={time}&station={station}&snr={snr}&data={data}
+* URL Pattern : http://*address*:*port*/*path*?device={device}&time={time}&station={station}&snr={snr}&data={data}&ack={ack}
 * Use HTTP Post : checked
 
 
