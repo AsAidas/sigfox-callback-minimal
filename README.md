@@ -46,3 +46,6 @@ In the Callback part, create a new callback :
   $ python3 client.py
   ```
 
+## Contributors ##
+
+* [Henri Buyse](mailto:henri.buyse.pro@gmail.com)
