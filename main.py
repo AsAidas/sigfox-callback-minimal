@@ -2,11 +2,10 @@
 
 __author__ = 'hbuyse'
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import configparser
 
-from request_handler import RequestHandler
+from request_handler import RequestHandler, ThreadedHTTPServer
 
 c = configparser.ConfigParser()
 c.read("./config.ini")
@@ -15,7 +14,7 @@ port = c.get("server_config", "port")
 
 
 def main():
-    httpd = HTTPServer((addr, int(port)), RequestHandler)
+    httpd = ThreadedHTTPServer((addr, int(port)), RequestHandler)
     print("{} Server Starts - {}:{}".format(time.asctime(), addr, str(port)))
 
     try:
