@@ -9,19 +9,24 @@ l = list()
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
+
+    """Handle requests in a separate thread.
+    """
 
 
 class RequestHandler(BaseHTTPRequestHandler, object):
 
     def do_HEAD(self):
+        """Respond to a HEAD request.
+        """
         self.send_response(200)
 
         self.send_header("Content-type", "application/json")
         self.end_headers()
 
     def do_GET(self):
-        """Respond to a GET request."""
+        """Respond to a GET request.
+        """
         self.send_response(200)
 
         self.send_header("Content-type", "application/json")
@@ -30,6 +35,8 @@ class RequestHandler(BaseHTTPRequestHandler, object):
         self.wfile.write(bytes("{}".format(json.dumps(l, indent=4, sort_keys=True)), 'UTF-8'))
 
     def do_POST(self):
+        """Respond to a POST request.
+        """
         d = dict()
 
         length = int(self.headers['Content-length'])
