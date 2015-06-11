@@ -1,10 +1,15 @@
 __author__ = 'hbuyse'
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
 import json
 
 
 l = list()
+
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
 
 
 class RequestHandler(BaseHTTPRequestHandler, object):
@@ -26,6 +31,7 @@ class RequestHandler(BaseHTTPRequestHandler, object):
 
     def do_POST(self):
         d = dict()
+
         length = int(self.headers['Content-length'])
         requete = str(self.rfile.read(length).decode('UTF-8'))
 
