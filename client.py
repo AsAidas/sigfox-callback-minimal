@@ -2,22 +2,26 @@
 
 __author__ = 'hbuyse'
 
-import http.client
+import requests
 import configparser
 import time
 import threading
+import ssl
 
+# Configuration Part
+# All datas can be configured in the file `config.ini`
 c = configparser.ConfigParser()
 c.read("./config.ini")
-ack = c.get("client_config", "ack")
+ack = c.get("client_data", "ack")
 addr = c.get("client_config", "address")
+api_path = c.get("client_config", "api_path")
 port = c.getint("client_config", "port")
-data = c.get("client_config", "data")
-device = c.get("client_config", "device")
-snr = c.get("client_config", "snr")
-station = c.get("client_config", "station")
+data = c.get("client_data", "data")
+device = c.get("client_data", "device")
+snr = c.get("client_data", "snr")
+station = c.get("client_data", "station")
 tm = int(time.time())
-threads = c.get("client_config", "threads")
+threads = c.get("client_data", "threads")
 
 
 class ClientThreadManager:
@@ -62,13 +66,11 @@ class ClientThread(threading.Thread):
         """
         frame = "device={}&time={}&snr={}&station={}&data={}&ack={}&threadID={}".format(device, tm, snr, station, data,
                                                                                         ack, self.threadID)
+        r = requests.post(url="http://{}:{}/{}".format(addr, port, api_path),
+                          data=bytes(frame, 'UTF-8'),
+                          verify=False)
 
-        conn = http.client.HTTPConnection(addr, port)
-        conn.request("POST", "/sigfox", bytes(frame, 'UTF-8'))
-        response = conn.getresponse()
-        conn.close()
-
-        print("{} ({}) > {}".format(str(response.status), self.threadID, response.read().decode('UTF-8')))
+        print("{} ({}) > {}".format(str(r.status_code), self.threadID, r.text))
 
 
 def main():
