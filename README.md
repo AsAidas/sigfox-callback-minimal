@@ -31,9 +31,9 @@ $ git clone https://github.com/hbuyse/sigfox-callback-minimal
 
 In the Callback part, create a new callback :
 
-* Type : DATA, UPLINK
+* Type : DATA, BIDIR
 * Channel : URL
-* URL Pattern : http://*address*:*port*/*path*?device={device}&time={time}&station={station}&snr={snr}&data={data}&ack={ack}
+* URL Pattern : http://*address*:*port*/*path*?device={device}&time={time}&duplicate={duplicate}&snr={snr}&station={station}&data={data}&avgSignal={avgSignal}&rssi={rssi}&ack={ack}&longPolling={longPolling}
 * Use HTTP Post : checked
 
 
@@ -41,23 +41,28 @@ In the Callback part, create a new callback :
 
 Script that creates the database and the table used by this program.
 
+## Create the database ##
+
+Script that creates the database and the table used by this program.
+
 ```
-CREATE SCHEMA 'sigfox';
+CREATE DATABASE IF NOT EXISTS `sigfox`;
+USE `sigfox`;
 
-CREATE TABLE 'sigfox.events' (
-  'idevents' int(11) NOT NULL AUTO_INCREMENT,
-  'time' int(11) NOT NULL,
-  'device' varchar(8) NOT NULL,
-  'snr' decimal(4,2) NOT NULL,
-  'station' varchar(8) NOT NULL,
-  'ack' varchar(5) NOT NULL,
-  'data' varchar(24) NOT NULL,
-  PRIMARY KEY ('idevents')
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
-
-CREATE USER 'sigfox'@'localhost' IDENTIFIED BY 'sigfox1234';
-GRANT ALL PRIVILEGES ON 'sigfox.events' TO 'sigfox'@'localhost';
-FLUSH PRIVILEGES;
+CREATE TABLE `raws` (
+  `idraws` int(11) NOT NULL AUTO_INCREMENT,
+  `time` int(11) NOT NULL,
+  `device` varchar(8) NOT NULL,
+  `snr` decimal(5,2) NOT NULL,
+  `station` varchar(8) NOT NULL,
+  `ack` varchar(5) NOT NULL,
+  `data` varchar(24) NOT NULL,
+  `duplicate` varchar(5) NOT NULL,
+  `avgSignal` decimal(5,2) NOT NULL,
+  `rssi` decimal(5,2) NOT NULL,
+  `longPolling` varchar(5) NOT NULL,
+  PRIMARY KEY (`idraws`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 ```
 
 

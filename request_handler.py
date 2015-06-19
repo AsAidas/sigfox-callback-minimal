@@ -30,9 +30,11 @@ logging.basicConfig(filename='tim.log',
 # insert_db_events: allow us to send frames to the database
 # delete_db_events: allow us to delete a row using the device ID and the timestamp
 # select_db_events: allow us to get all datas of the database
-insert_db_events = "INSERT INTO events (time, device, snr, station, ack, data) VALUES (%s,%s,%s,%s,%s,%s)"
-delete_db_events = "DELETE FROM events WHERE time = %s AND device = %s"
-select_db_events = "SELECT * FROM events"
+insert_db_raws = "INSERT INTO `raws` (`time`, `device`, `snr`, `station`, `ack`, `data`, `duplicate`, `avgSignal`, \
+                                      `rssi`, `longPolling`) \
+                  VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+delete_db_raws = "DELETE FROM `raws` WHERE `time` = %s AND `device` = %s"
+select_db_raws  = "SELECT * FROM `raws`;"
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
@@ -87,7 +89,7 @@ class RequestHandler(BaseHTTPRequestHandler, object):
             events = pymysql.cursors.DictCursor
             with conn:
                 cur = conn.cursor(pymysql.cursors.DictCursor)
-                cur.execute(select_db_events)
+                cur.execute(select_db_raws)
                 events = cur
                 cur.close()
         except (Exception, KeyError) as e:
@@ -152,16 +154,22 @@ class RequestHandler(BaseHTTPRequestHandler, object):
         for i in requete.split("&"):
             d[i.split("=")[0]] = i.split("=")[1]
 
+        if "ack" not in d:
+            d["ack"] = "false"
+
+        if "longPolling" not in d:
+            d["longPolling"] = "false"
+
         # Check if the device which frame was send by SigFox is one of the device we follow
         # and the length of the frame is 24 hexadecimal characters.
         # After this, we send the datas to the database.
 
         try:
-            v = (d["time"], d["device"], d["snr"], d["station"], d["ack"], d["data"])
+            v = (d["time"], d["device"], d["snr"], d["station"], d["ack"], d["data"], d["duplicate"], d["avgSignal"], d["rssi"], d["longPolling"])
             conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db, charset='utf8')
             with conn:
                 cur = conn.cursor()
-                cur.execute(insert_db_events, v)
+                cur.execute(insert_db_raws, v)
                 conn.commit()
                 cur.close()
         except (Exception, KeyError) as e:
@@ -242,7 +250,7 @@ class RequestHandler(BaseHTTPRequestHandler, object):
             conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db, charset='utf8')
             with conn:
                 cur = conn.cursor()
-                cur.execute(delete_db_events, v)
+                cur.execute(delete_db_raws, v)
                 cur.close()
         except (Exception, KeyError) as e:
             self.send_response(400)
