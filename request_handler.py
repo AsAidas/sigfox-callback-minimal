@@ -22,7 +22,7 @@ passwd = c.get("mysql56", "passwd")
 db = c.get("mysql56", "db")
 
 # Logging configuration
-logging.basicConfig(filename='tim.log',
+logging.basicConfig(filename='request_handler.log',
                     format='%(asctime)s / %(levelname)s > %(message)s',
                     level=logging.DEBUG)
 
