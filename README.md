@@ -2,6 +2,9 @@
 
 Sigfox callback minimal HTTP server
 
+## TODO ##
+
+- [ ] Use sqlite3 instead of mysql
 
 ## Prerequisites ##
 
